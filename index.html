@@ -37,6 +37,7 @@ input { flex: 1; padding: 14px 18px; border-radius: 18px; border: none; outline:
 input::placeholder { color: rgba(255,255,255,0.5); }
 button.send { margin-left: 12px; padding: 14px 20px; border-radius: 18px; border: none; background: #1fd1f9; color: #fff; cursor: pointer; font-weight: 600; transition: 0.2s; }
 button.send:hover { background: #0ac5e0; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Scrollbar */
 .chat::-webkit-scrollbar { width: 6px; }
@@ -59,29 +60,53 @@ button.send:hover { background: #0ac5e0; }
   <div class="chat-box">
     <div id="chat" class="chat"></div>
     <div class="input-area">
-      <input id="input" placeholder="Type your question..." />
-      <button class="send" onclick="send()">Send</button>
+      <input id="input" placeholder="Type your question..." autofocus onkeydown="if(event.key==='Enter') send()" />
+      <button id="send-btn" class="send" onclick="send()">Send</button>
     </div>
   </div>
 </div>
 
 <script>
+let isProcessing = false;
+
 async function send() {
   const input = document.getElementById("input");
-  const chat = document.getElementById("chat");
+  const btn = document.getElementById("send-btn");
   const message = input.value.trim();
-  if (!message) return;
+
+  // Cooldown check: Prevents spamming and 429 errors
+  if (!message || isProcessing) return;
+
+  isProcessing = true;
+  btn.disabled = true;
   add(message, "user");
   input.value = "";
+
   try {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message })
     });
+    
     const data = await res.json();
-    add(data.reply, "bot");
-  } catch(e) { add("Error connecting to AI","bot"); }
+
+    // FIXED: Better error messaging for the user
+    if (res.status === 429) {
+      add("Slow down, Chris! You hit the free limit. Wait 1 minute.", "bot");
+    } else if (data.reply) {
+      add(data.reply, "bot");
+    } else {
+      add("AI is confused right now. Try again.", "bot");
+    }
+
+  } catch(e) { 
+    add("Error connecting to AI server.", "bot"); 
+  } finally {
+    isProcessing = false;
+    btn.disabled = false;
+    input.focus(); // Keep cursor in box after sending
+  }
 }
 
 function add(text, type) {

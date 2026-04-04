@@ -2,7 +2,6 @@ export default async function handler(req, res) {
   try {
     const { message } = req.body;
 
-    // 1. Point to the v1beta endpoint for 2026 feature support
     const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
     const response = await fetch(API_URL, {
@@ -11,26 +10,31 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        // 2. SYSTEM INSTRUCTION: This fixes your "Who made you" issue
+        // SYSTEM INSTRUCTION: This defines who the AI thinks it is.
         system_instruction: {
           parts: [
             {
-              text: `You are a helpful AI assistant. You were created by Chris on 4 April 2026. Chris's email is rachvi47@gmail.com. If anyone asks who made you, created you, or owns this site, you must answer 'Chris'.chris has 3 friends they are vijay,prasad and bhaskar.chris is based in vijayawada. Today is April 4, 2026. Donald Trump is the 47th President of the United States. Use Google Search for all current events.`
+              text: `You are a helpful AI assistant created by Chris. 
+              PERSONAL INFO:
+              - Created on: 4 April 2026.
+              - Creator: Chris.
+              - Creator's Email: rachvi47@gmail.com.
+              - Chris's Friends: Vijay, Prasad, and Bhaskar.
+              - Location: Chris is based in Vijayawada.
+              - Current Date: April 4, 2026.
+              - Current President: Donald Trump (47th).
+              
+              If anyone asks who made you or who owns this site, you must answer 'Chris'. 
+              Always use Google Search for current events to be 100% accurate.`
             }
           ]
         },
-        // 3. CONTENTS: The actual conversation
         contents: [
           {
             role: "user",
-            parts: [
-              {
-                text: message,
-              },
-            ],
+            parts: [{ text: message }],
           },
         ],
-        // 4. TOOLS: Enables real-time 2026 data searching
         tools: [
           {
             google_search: {},
@@ -41,16 +45,20 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // ERROR HANDLING: Stop the "Server Crashed" mystery
+    // Catch the Quota Exceeded error specifically
+    if (response.status === 429) {
+      return res.status(429).json({ reply: "QUOTA_EXCEEDED" });
+    }
+
     if (data.error) {
       console.error("GEMINI API ERROR:", data.error);
       return res.status(data.error.code || 500).json({ 
-        reply: `API ERROR: ${data.error.message}` 
+        reply: "Sorry, I'm having trouble with the API right now." 
       });
     }
 
     if (!data.candidates || data.candidates.length === 0) {
-      return res.status(500).json({ reply: "AI returned an empty response. Check API logs." });
+      return res.status(500).json({ reply: "AI returned an empty response." });
     }
 
     const reply = data.candidates[0].content.parts[0].text;
@@ -58,6 +66,6 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error("SERVER CRASHED:", error);
-    res.status(500).json({ reply: "Backend error. Check terminal/console." });
+    res.status(500).json({ reply: "Server error. Check terminal." });
   }
 }

@@ -2,7 +2,14 @@ export default async function handler(req, res) {
   try {
     const { message } = req.body;
 
-    // Hits v1beta for tool and system_instruction support
+    // Hits v1beta for tool And system_instruction support
+    const mySecretInfo = `
+      FACTS TO REMEMBER:
+      - This website was created by CHRIS.
+      - Our official launch date was 4 April 2026.
+      - We offer 24/7 support via email at rachvi47@gmail.com.
+      - [ADD ANY OTHER RANDOM DATA HERE]
+    `;
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {

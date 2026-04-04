@@ -3,70 +3,248 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XXX AI</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<title>XXX AI - Universe Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-/* Reset & base */
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-body { height: 100vh; background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); display: flex; flex-direction: column; color: #fff; }
+/* --- Deep Space Reset & Base --- */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
-/* Navbar */
-.nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; backdrop-filter: blur(12px); background: rgba(255,255,255,0.05); border-radius: 0 0 20px 20px; }
-.logo { font-weight: 700; font-size: 22px; letter-spacing: 1px; }
-.nav button { background: #ff6ec7; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: 0.2s; }
-.nav button:hover { background: #f93dc5; }
+body { 
+  height: 100vh; 
+  /* Premium Background: Animated Space Gradient + Nebula */
+  background: 
+    radial-gradient(circle at bottom, #111 0%, #000 100%),
+    url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?q=80&w=2560') no-repeat center center fixed;
+  background-size: cover;
+  display: flex; 
+  flex-direction: column; 
+  color: #fff; 
+  overflow: hidden; /* Prevents body scroll */
+}
 
-/* Hero */
-.hero { text-align: center; margin: 40px 20px; }
-.hero h1 { font-size: 44px; background: linear-gradient(90deg, #ff6ec7, #1fd1f9); -webkit-background-clip: text; color: transparent; }
-.hero p { opacity: 0.7; margin-top: 12px; font-size: 18px; }
+/* --- Premium Glassmorphism Navbar --- */
+.nav { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 15px 50px; 
+  backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(10, 10, 15, 0.5); 
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+.logo { 
+  font-weight: 700; 
+  font-size: 24px; 
+  letter-spacing: 2px; 
+  background: linear-gradient(90deg, #1fd1f9, #b621ff);
+  -webkit-background-clip: text;
+  color: transparent;
+  text-transform: uppercase;
+}
+.nav button { 
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  border: none; 
+  padding: 10px 25px; 
+  border-radius: 30px; 
+  cursor: pointer; 
+  color: white;
+  font-weight: 600; 
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: 0.3s rgba(37, 117, 252, 0.5);
+  box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
+}
+.nav button:hover { 
+  box-shadow: 0 6px 20px rgba(37, 117, 252, 0.6);
+  transform: translateY(-1px);
+}
 
-/* Chat Container */
-.container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
-.chat-box { width: 500px; max-width: 95%; height: 600px; display: flex; flex-direction: column; background: rgba(255,255,255,0.05); border-radius: 30px; backdrop-filter: blur(20px); box-shadow: 0 10px 40px rgba(0,0,0,0.5); overflow: hidden; }
+/* --- Hero Section (Simplified for Premium Feel) --- */
+.hero { 
+  text-align: center; 
+  margin-top: 120px; /* Space for fixed nav */
+  margin-bottom: 30px;
+}
+.hero h1 { 
+  font-size: 50px; 
+  font-weight: 700;
+  background: linear-gradient(120deg, #fff 0%, #1fd1f9 50%, #b621ff 100%);
+  -webkit-background-clip: text; 
+  color: transparent; 
+  letter-spacing: -1px;
+}
+.hero p { 
+  opacity: 0.6; 
+  margin-top: 5px; 
+  font-size: 18px; 
+  font-weight: 300;
+}
 
-/* Chat messages */
-.chat { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-.msg { padding: 14px 18px; border-radius: 20px; max-width: 80%; line-height: 1.4; word-wrap: break-word; }
-.user { align-self: flex-end; background: linear-gradient(120deg, #ff6ec7, #1fd1f9); color: #fff; box-shadow: 0 5px 20px rgba(255,110,199,0.3); }
-.bot { align-self: flex-start; background: rgba(255,255,255,0.1); color: #fff; }
+/* --- Premium Floating Chat Container --- */
+.container { 
+  flex: 1; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  padding: 20px; 
+  padding-bottom: 40px;
+}
+.chat-box { 
+  width: 650px; /* Wider for premium feel */
+  max-width: 95%; 
+  height: 70vh; /* Responsive height */
+  max-height: 750px;
+  display: flex; 
+  flex-direction: column; 
+  background: rgba(15, 15, 25, 0.65); /* Dark Glass */
+  border-radius: 25px; 
+  backdrop-filter: blur(25px) saturate(150%); 
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7); 
+  overflow: hidden; 
+  transition: 0.3s ease;
+}
 
-/* Input area */
-.input-area { display: flex; padding: 15px; background: rgba(255,255,255,0.05); }
-input { flex: 1; padding: 14px 18px; border-radius: 18px; border: none; outline: none; background: rgba(255,255,255,0.1); color: #fff; font-size: 16px; }
-input::placeholder { color: rgba(255,255,255,0.5); }
-button.send { margin-left: 12px; padding: 14px 20px; border-radius: 18px; border: none; background: #1fd1f9; color: #fff; cursor: pointer; font-weight: 600; transition: 0.2s; }
-button.send:hover { background: #0ac5e0; }
-button:disabled { opacity: 0.5; cursor: not-allowed; }
+/* --- Premium Message Bubbles --- */
+.chat { 
+  flex: 1; 
+  padding: 30px; 
+  overflow-y: auto; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 15px; 
+}
+.msg { 
+  padding: 16px 22px; 
+  border-radius: 18px; 
+  max-width: 75%; 
+  line-height: 1.5; 
+  font-size: 15px;
+  font-weight: 300;
+  word-wrap: break-word; 
+  transition: 0.2s ease;
+}
+/* User Message: Neon Glow Gradient */
+.user { 
+  align-self: flex-end; 
+  background: linear-gradient(135deg, #1fd1f9 0%, #b621ff 100%);
+  color: #fff; 
+  box-shadow: 0 8px 25px rgba(31, 209, 249, 0.3);
+  border-bottom-right-radius: 4px; /* Premium bubble style */
+}
+/* Bot Message: Subtly translucent */
+.bot { 
+  align-self: flex-start; 
+  background: rgba(255, 255, 255, 0.05); 
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255,255,255,0.03);
+  border-bottom-left-radius: 4px;
+}
 
-/* Scrollbar */
-.chat::-webkit-scrollbar { width: 6px; }
-.chat::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+/* --- Premium Input Area --- */
+.input-area { 
+  display: flex; 
+  padding: 20px; 
+  background: rgba(10, 10, 15, 0.4); 
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+input { 
+  flex: 1; 
+  padding: 16px 22px; 
+  border-radius: 30px; 
+  border: 1px solid rgba(255, 255, 255, 0.05); 
+  outline: none; 
+  background: rgba(0, 0, 0, 0.2); 
+  color: #fff; 
+  font-size: 16px; 
+  font-weight: 300;
+  transition: 0.3s;
+}
+input::placeholder { color: rgba(255,255,255,0.3); }
+input:focus { 
+  border-color: rgba(31, 209, 249, 0.5);
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 15px rgba(31, 209, 249, 0.1);
+}
+
+/* --- Premium Send Button --- */
+button.send { 
+  margin-left: 15px; 
+  padding: 0 30px;
+  border-radius: 30px; 
+  border: none; 
+  background: linear-gradient(135deg, #1fd1f9 0%, #0ac5e0 100%);
+  color: #fff; 
+  cursor: pointer; 
+  font-weight: 600; 
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: 0.3s; 
+  box-shadow: 0 4px 15px rgba(31, 209, 249, 0.3);
+}
+button.send:hover { 
+  box-shadow: 0 6px 20px rgba(31, 209, 249, 0.6);
+  transform: translateY(-1px);
+}
+/* Premium Disabled State */
+button:disabled { 
+  opacity: 0.4; 
+  cursor: not-allowed; 
+  background: #444 !important;
+  box-shadow: none !important;
+}
+
+/* --- Premium Scrollbar --- */
+.chat::-webkit-scrollbar { width: 8px; }
+.chat::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+.chat::-webkit-scrollbar-thumb { 
+  background: rgba(255, 255, 255, 0.05); 
+  border-radius: 10px; 
+}
+.chat::-webkit-scrollbar-thumb:hover { background: rgba(31, 209, 249, 0.2); }
+
+/* --- Responsiveness --- */
+@media (max-width: 768px) {
+  .nav { padding: 15px 25px; }
+  .logo { font-size: 20px; }
+  .hero h1 { font-size: 36px; }
+  .container { padding: 10px; }
+  .chat-box { height: 80vh; border-radius: 20px; }
+  .chat { padding: 20px; }
+  .msg { max-width: 85%; font-size: 14px; }
+}
 </style>
 </head>
 <body>
 
 <div class="nav">
   <div class="logo">XXX AI</div>
-  <button>FREE</button>
+  <button>PREMIUM</button>
 </div>
 
 <div class="hero">
-  <h1>HI,THERE</h1>
-  <p>HOW WAS YOUR DAY?</p>
+  <h1>Awaiting Protocol</h1>
+  <p>Your universe of knowledge begins here.</p>
 </div>
 
 <div class="container">
   <div class="chat-box">
     <div id="chat" class="chat"></div>
     <div class="input-area">
-      <input id="input" placeholder="Type your question..." autofocus onkeydown="if(event.key==='Enter') send()" />
-      <button id="send-btn" class="send" onclick="send()">Send</button>
+      <input id="input" placeholder="Initiate sequence..." autofocus onkeydown="if(event.key==='Enter') send()" />
+      <button id="send-btn" class="send" onclick="send()">Transmit</button>
     </div>
   </div>
 </div>
 
 <script>
+// --- YOUR ORIGINAL JAVASCRIPT LOGIC (SAME VARIABLE NAMES) ---
 let isProcessing = false;
 
 async function send() {
@@ -74,11 +252,13 @@ async function send() {
   const btn = document.getElementById("send-btn");
   const message = input.value.trim();
 
-  // Cooldown check: Prevents spamming and 429 errors
+  // Cooldown check (FEATURE 3: Prevents Spam)
   if (!message || isProcessing) return;
 
   isProcessing = true;
-  btn.disabled = true;
+  btn.disabled = true; // Premium disabled state in CSS handles the look
+  btn.innerText = "Transmitting..."; // Changes text for better UX
+
   add(message, "user");
   input.value = "";
 
@@ -91,33 +271,8 @@ async function send() {
     
     const data = await res.json();
 
-    // FIXED: Better error messaging for the user
+    // FIXED: Non-raw JSON error handling
     if (res.status === 429) {
-      add("Slow down, Chris! You hit the free limit. Wait 1 minute.", "bot");
+      add("ERROR: Transmission limit reached. Pause protocol for 60 seconds.", "bot");
     } else if (data.reply) {
-      add(data.reply, "bot");
-    } else {
-      add("AI is confused right now. Try again.", "bot");
-    }
-
-  } catch(e) { 
-    add("Error connecting to AI server.", "bot"); 
-  } finally {
-    isProcessing = false;
-    btn.disabled = false;
-    input.focus(); // Keep cursor in box after sending
-  }
-}
-
-function add(text, type) {
-  const chat = document.getElementById("chat");
-  const div = document.createElement("div");
-  div.className = "msg " + type;
-  div.innerText = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-</script>
-
-</body>
-</html>
+      add(data

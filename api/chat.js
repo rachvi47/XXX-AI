@@ -2,7 +2,8 @@ export default async function handler(req, res) {
   try {
     const { message } = req.body;
 
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    // CHANGED: Switched endpoint from ':generateContent' to ':streamGenerateContent'
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:streamGenerateContent?key=${process.env.GEMINI_API_KEY}`;
 
     const response = await fetch(API_URL, {
       method: "POST",
@@ -10,7 +11,6 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        // SYSTEM INSTRUCTION: This defines who the AI thinks it is.
         system_instruction: {
           parts: [
             {
@@ -43,29 +43,67 @@ export default async function handler(req, res) {
       }),
     });
 
-    const data = await response.json();
-
-    // Catch the Quota Exceeded error specifically
+    // Check for rate limit or quota errors before streaming starts
     if (response.status === 429) {
       return res.status(429).json({ reply: "QUOTA_EXCEEDED" });
     }
 
-    if (data.error) {
-      console.error("GEMINI API ERROR:", data.error);
-      return res.status(data.error.code || 500).json({ 
-        reply: "Sorry, I'm having trouble with the API right now." 
-      });
+    if (!response.ok) {
+      return res.status(response.status).json({ reply: "API connection error." });
     }
 
-    if (!data.candidates || data.candidates.length === 0) {
-      return res.status(500).json({ reply: "AI returned an empty response." });
+    // CHANGED: Set proper headers to handle a text stream
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
+    res.setHeader("Connection", "keep-alive");
+
+    // Hook up a data reader to parse Gemini's incoming streamed data packets
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+
+      // Gemini streams responses as an array of JSON objects wrapped in brackets [ ... ]
+      // This logic cleans up the brackets and parses individual chunks on the fly
+      while (buffer.includes("\n")) {
+        const parts = buffer.split("\n");
+        const currentLine = parts.shift().trim();
+        buffer = parts.join("\n");
+
+        // Clean up formatting symbols that Gemini wraps around the stream lines
+        let cleanLine = currentLine;
+        if (cleanLine.startsWith("[")) cleanLine = cleanLine.substring(1);
+        if (cleanLine.endsWith("]")) cleanLine = cleanLine.slice(0, -1);
+        if (cleanLine.startsWith(",")) cleanLine = cleanLine.substring(1);
+
+        cleanLine = cleanLine.trim();
+        if (!cleanLine) continue;
+
+        try {
+          const jsonChunk = JSON.parse(cleanLine);
+          if (jsonChunk.candidates?.[0]?.content?.parts?.[0]?.text) {
+            const textChunk = jsonChunk.candidates[0].content.parts[0].text;
+            // Write out the text segment directly to your front-end interface
+            res.write(textChunk);
+          }
+        } catch (e) {
+          // Skip lines that aren't fully completed JSON blocks yet
+        }
+      }
     }
 
-    const reply = data.candidates[0].content.parts[0].text;
-    res.status(200).json({ reply });
+    // Safely wrap up the transmission line
+    res.end();
 
   } catch (error) {
     console.error("SERVER CRASHED:", error);
-    res.status(500).json({ reply: "Server error. Check terminal." });
+    if (!res.writableEnded) {
+      res.status(500).json({ reply: "Server error. Check terminal." });
+    }
   }
 }

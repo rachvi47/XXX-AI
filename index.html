@@ -71,6 +71,17 @@ body {
 .user { align-self: flex-end; background: linear-gradient(135deg, #1fd1f9, #b621ff); box-shadow: 0 5px 15px rgba(31, 209, 249, 0.3); }
 .bot { align-self: flex-start; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.05); }
 
+/* --- Space-Themed Loading Indicator --- */
+.loader-msg { align-self: flex-start; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.02); display: flex; gap: 6px; align-items: center; padding: 14px 25px; }
+.dot { width: 8px; height: 8px; background: #1fd1f9; border-radius: 50%; animation: pulse 1.4s infinite ease-in-out both; }
+.dot:nth-child(2) { animation-delay: 0.2s; background: #9b70ff; }
+.dot:nth-child(3) { animation-delay: 0.4s; background: #b621ff; }
+
+@keyframes pulse {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; box-shadow: 0 0 0px rgba(31,209,249,0); }
+  40% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 10px rgba(182,33,255,0.8); }
+}
+
 /* --- Input Area --- */
 .input-area { display: flex; padding: 20px; background: rgba(0,0,0,0.2); }
 input { 
@@ -135,6 +146,9 @@ async function send() {
   add(message, "user");
   input.value = "";
 
+  // Show space loading dots
+  showLoader();
+
   try {
     const res = await fetch("/api/chat", { // MAKE SURE THIS MATCHES YOUR BACKEND PATH
       method: "POST",
@@ -143,6 +157,9 @@ async function send() {
     });
     
     const data = await res.json();
+
+    // Hide loader right before displaying response
+    removeLoader();
 
     if (res.status === 429) {
       add("SYSTEM OVERLOAD: Please wait 60 seconds.", "bot");
@@ -153,6 +170,7 @@ async function send() {
     }
 
   } catch(e) { 
+    removeLoader();
     add("CRITICAL ERROR: Connection to core failed.", "bot"); 
   } finally {
     isProcessing = false;
@@ -168,6 +186,30 @@ function add(text, type) {
   div.innerText = text;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
+}
+
+// --- LOADER HELPER FUNCTIONS ---
+function showLoader() {
+  const chat = document.getElementById("chat");
+  const loaderDiv = document.createElement("div");
+  loaderDiv.id = "space-loader";
+  loaderDiv.className = "msg loader-msg";
+  
+  loaderDiv.innerHTML = `
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  `;
+  
+  chat.appendChild(loaderDiv);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function removeLoader() {
+  const loader = document.getElementById("space-loader");
+  if (loader) {
+    loader.remove();
+  }
 }
 </script>
 

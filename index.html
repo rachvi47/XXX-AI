@@ -69,7 +69,14 @@ body {
 /* --- Messages --- */
 .msg { padding: 14px 20px; border-radius: 20px; max-width: 80%; font-size: 15px; line-height: 1.5; }
 .user { align-self: flex-end; background: linear-gradient(135deg, #1fd1f9, #b621ff); box-shadow: 0 5px 15px rgba(31, 209, 249, 0.3); }
-.bot { align-self: flex-start; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.05); }
+
+/* REMOVED THE HIGHLIGHTER BACKGROUND: Clean floating text for the AI */
+.bot { 
+  align-self: flex-start; 
+  background: none; 
+  border: none; 
+  padding-left: 5px;
+}
 
 /* --- Space-Themed Loading Indicator --- */
 .loader-msg { align-self: flex-start; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.02); display: flex; gap: 6px; align-items: center; padding: 14px 25px; }
@@ -131,7 +138,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// --- MESSAGE LOGIC ---
+// --- MESSAGE LOGIC WITH REAL-TIME STREAMING ---
 let isProcessing = false;
 
 async function send() {
@@ -146,27 +153,46 @@ async function send() {
   add(message, "user");
   input.value = "";
 
-  // Show space loading dots
   showLoader();
 
   try {
-    const res = await fetch("/api/chat", { // MAKE SURE THIS MATCHES YOUR BACKEND PATH
+    const res = await fetch("/api/chat", { 
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message })
     });
     
-    const data = await res.json();
-
-    // Hide loader right before displaying response
-    removeLoader();
-
     if (res.status === 429) {
+      removeLoader();
       add("SYSTEM OVERLOAD: Please wait 60 seconds.", "bot");
-    } else if (data.reply) {
-      add(data.reply, "bot");
-    } else {
-      add("SIGNAL LOST: Re-attempt transmission.", "bot");
+      return;
+    }
+
+    if (!res.ok) {
+      throw new Error("Transmission failed");
+    }
+
+    // Prepare to stream the response text
+    removeLoader();
+    
+    // Create an empty bot message container that we will continuously feed text into
+    const botElement = createEmptyBotMessage();
+    
+    // Read the stream chunks coming from your backend server
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let done = false;
+
+    while (!done) {
+      const { value, done: readerDone } = await reader.read();
+      done = readerDone;
+      if (value) {
+        const chunk = decoder.decode(value, { stream: true });
+        // Append incoming words straight to the active container
+        botElement.innerText += chunk;
+        const chat = document.getElementById("chat");
+        chat.scrollTop = chat.scrollHeight; // Auto-scroll down smoothly
+      }
     }
 
   } catch(e) { 
@@ -186,6 +212,14 @@ function add(text, type) {
   div.innerText = text;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
+}
+
+function createEmptyBotMessage() {
+  const chat = document.getElementById("chat");
+  const div = document.createElement("div");
+  div.className = "msg bot";
+  chat.appendChild(div);
+  return div;
 }
 
 // --- LOADER HELPER FUNCTIONS ---

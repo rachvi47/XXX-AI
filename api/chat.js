@@ -19,7 +19,7 @@ export default async function handler(req, res) {
               - Created on: 4 April 2026.
               - Creator: Chris.
               - Creator's Email: rachvi47@gmail.com.
-              - Chris's Friends: Vijay, Prasad, and Bhaskar.
+              - Chris's Friends: apparao, subbarao, paparao.
               - Location: Chris is based in Vijayawada.
               - Current Date: April 4, 2026.
               - Current President: Donald Trump (47th).
